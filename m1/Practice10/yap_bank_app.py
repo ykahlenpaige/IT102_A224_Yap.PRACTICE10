@@ -9,10 +9,7 @@ import yap_bank_transfer
 import yap_bank_eReceipt
 import yap_bank_limit
 
-
-# ==========================================
 # PAGE CONFIGURATION
-# ==========================================
 
 st.set_page_config(
     page_title="✪ YAP ✪ Bank",
@@ -20,10 +17,7 @@ st.set_page_config(
     layout="wide"
 )
 
-
-# ==========================================
 # SESSION STATE
-# ==========================================
 
 if "logged_in" not in st.session_state:
 
@@ -41,10 +35,7 @@ st.caption(
     "Secure Digital Banking System"
 )
 
-
-# ==========================================
 # LOGIN / REGISTER
-# ==========================================
 
 if not st.session_state.logged_in:
 
@@ -55,10 +46,7 @@ if not st.session_state.logged_in:
         ]
     )
 
-
-    # ======================================
     # LOGIN
-    # ======================================
 
     with login_tab:
 
@@ -109,10 +97,7 @@ if not st.session_state.logged_in:
 
                 st.error(message)
 
-
-    # ======================================
     # REGISTER
-    # ======================================
 
     with register_tab:
 
@@ -196,10 +181,7 @@ if not st.session_state.logged_in:
 
                 st.error(message)
 
-
-# ==========================================
 # BANKING SYSTEM
-# ==========================================
 
 else:
 
@@ -207,10 +189,7 @@ else:
         st.session_state.account
     )
 
-
-    # ======================================
     # SIDEBAR
-    # ======================================
 
     st.sidebar.title(
         "✪ YAP ✪ BANK"
@@ -236,9 +215,7 @@ else:
     st.sidebar.divider()
 
 
-    # ======================================
     # SIDEBAR STYLING
-    # ======================================
 
     st.markdown("""
     <style>
@@ -334,10 +311,7 @@ else:
     </style>
     """, unsafe_allow_html=True)
 
-
-    # ======================================
     # BANKING MENU
-    # ======================================
 
     menu = st.sidebar.radio(
         "BANKING MENU",
@@ -355,10 +329,7 @@ else:
 
     st.sidebar.divider()
 
-
-    # ======================================
     # LOGOUT
-    # ======================================
 
     if st.sidebar.button(
         "Logout",
@@ -371,10 +342,7 @@ else:
 
         st.rerun()
 
-
-    # ==========================================
     # DASHBOARD
-    # ==========================================
 
     if menu == "Dashboard":
 
@@ -420,10 +388,7 @@ else:
             "the menu on the left."
         )
 
-
-    # ==========================================
     # DEPOSIT
-    # ==========================================
 
     elif menu == "Deposit":
 
@@ -494,10 +459,7 @@ else:
                         )
                     )
 
-
-    # ==========================================
     # WITHDRAW
-    # ==========================================
 
     elif menu == "Withdraw":
 
@@ -505,8 +467,6 @@ else:
             "Withdraw Money"
         )
 
-
-        # Get today's withdrawal amount
         daily_withdrawal = (
             yap_bank_limit
             .get_daily_withdrawal(
@@ -514,8 +474,6 @@ else:
             )
         )
 
-
-        # Calculate remaining daily limit
         remaining_limit = (
             yap_bank_limit.DAILY_WITHDRAWAL_LIMIT
             - daily_withdrawal
@@ -550,7 +508,6 @@ else:
             use_container_width=True
         ):
 
-            # Check if the amount is valid
             if not yap_bank_utils.is_valid_amount(
                 amount
             ):
@@ -559,8 +516,6 @@ else:
                     "Invalid withdrawal amount."
                 )
 
-
-            # Check account balance
             elif amount > account.check_balance():
 
                 st.error(
@@ -570,7 +525,6 @@ else:
 
             else:
 
-                # Check daily withdrawal limit
                 limit_result = (
                     yap_bank_limit
                     .check_withdrawal_limit(
@@ -632,10 +586,7 @@ else:
                             )
                         )
 
-
-    # ==========================================
     # MONEY TRANSFER
-    # ==========================================
 
     elif menu == "Money Transfer":
 
@@ -708,10 +659,7 @@ else:
                     result["message"]
                 )
 
-
-    # ==========================================
     # TRANSACTION HISTORY
-    # ==========================================
 
     elif menu == "Transaction History":
 
@@ -793,10 +741,7 @@ else:
                 "No transaction history available."
             )
 
-
-    # ==========================================
     # TRANSACTION ANALYSIS
-    # ==========================================
 
     elif menu == "Transaction Analysis":
 
@@ -812,10 +757,7 @@ else:
             )
         )
 
-
-        # --------------------------------------
         # TRANSACTION SUMMARY
-        # --------------------------------------
 
         st.subheader(
             "1. Transaction Summary"
@@ -851,10 +793,7 @@ else:
 
         st.divider()
 
-
-        # --------------------------------------
         # MONEY FLOW ANALYSIS
-        # --------------------------------------
 
         st.subheader(
             "2. Money Flow Analysis"
@@ -899,10 +838,7 @@ else:
 
         st.divider()
 
-
-        # --------------------------------------
         # ACCOUNT ACTIVITY
-        # --------------------------------------
 
         st.subheader(
             "3. Account Activity Analysis"
@@ -969,8 +905,6 @@ else:
             .get_transactions()
         )
 
-
-        # Only show this account's transactions
         transactions = [
 
             transaction

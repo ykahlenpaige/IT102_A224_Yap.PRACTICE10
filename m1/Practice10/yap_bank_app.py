@@ -8,12 +8,21 @@ import yap_bank_utils
 import yap_bank_transfer
 import yap_bank_receipt
 
+
+# ==========================================
+# PAGE CONFIGURATION
+# ==========================================
+
 st.set_page_config(
     page_title="✪ YAP ✪ Bank",
     page_icon="🏦",
     layout="wide"
 )
 
+
+# ==========================================
+# SESSION STATE
+# ==========================================
 
 if "logged_in" not in st.session_state:
 
@@ -24,11 +33,17 @@ if "account" not in st.session_state:
 
     st.session_state.account = None
 
+
 st.title("✪ YAP ✪ BANK")
 
 st.caption(
     "Secure Digital Banking System"
 )
+
+
+# ==========================================
+# LOGIN / REGISTER
+# ==========================================
 
 if not st.session_state.logged_in:
 
@@ -38,6 +53,11 @@ if not st.session_state.logged_in:
             "Register"
         ]
     )
+
+
+    # ==========================================
+    # LOGIN
+    # ==========================================
 
     with login_tab:
 
@@ -83,10 +103,15 @@ if not st.session_state.logged_in:
 
                 st.rerun()
 
+
             else:
 
                 st.error(message)
 
+
+    # ==========================================
+    # REGISTER
+    # ==========================================
 
     with register_tab:
 
@@ -94,15 +119,18 @@ if not st.session_state.logged_in:
             "Create Your ✪ YAP ✪ Bank Account"
         )
 
+
         name = st.text_input(
             "Full Name",
             key="register_name"
         )
 
+
         account_number = st.text_input(
             "Account Number",
             key="register_account"
         )
+
 
         pin = st.text_input(
             "Create 4-Digit PIN",
@@ -110,11 +138,13 @@ if not st.session_state.logged_in:
             key="register_pin"
         )
 
+
         confirm_pin = st.text_input(
             "Confirm PIN",
             type="password",
             key="register_confirm_pin"
         )
+
 
         account_type = st.selectbox(
             "Account Type",
@@ -123,6 +153,7 @@ if not st.session_state.logged_in:
                 "Student Account"
             ]
         )
+
 
         starting_balance = st.number_input(
             "Starting Balance",
@@ -159,10 +190,15 @@ if not st.session_state.logged_in:
                     "Please use the Login tab."
                 )
 
+
             else:
 
                 st.error(message)
 
+
+# ==========================================
+# BANKING APPLICATION
+# ==========================================
 
 else:
 
@@ -171,28 +207,42 @@ else:
     )
 
 
+    # ==========================================
+    # SIDEBAR
+    # ==========================================
+
     st.sidebar.title(
         "✪ YAP ✪ BANK"
     )
+
 
     st.sidebar.write(
         f"**{account.account_name}**"
     )
 
+
     st.sidebar.caption(
         account.get_account_type()
     )
+
 
     st.sidebar.write(
         f"Account: "
         f"{account.account_number}"
     )
 
+
     st.sidebar.divider()
+
+
+    # ==========================================
+    # SIDEBAR STYLING
+    # ==========================================
 
     st.markdown("""
     <style>
 
+    /* Clean containers for the sidebar menu */
     [data-testid="stSidebar"] [role="radiogroup"] label {
 
         background-color: #30333d;
@@ -218,10 +268,10 @@ else:
         text-align: center;
 
         transition: all 0.2s ease;
-
     }
 
 
+    /* Keep all menu text centered */
     [data-testid="stSidebar"] [role="radiogroup"] label > div:last-child {
 
         width: 100%;
@@ -229,24 +279,24 @@ else:
         justify-content: center;
 
         text-align: center;
-
     }
 
 
+    /* Style the radio indicator to match the blue theme */
     [data-testid="stSidebar"] [role="radiogroup"] input[type="radio"] {
 
         accent-color: #93c5fd;
-
     }
 
 
+    /* Make the selected indicator a soft blue instead of red */
     [data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) input[type="radio"] {
 
         accent-color: #dbeafe;
-
     }
 
 
+    /* Professional blue highlight when selected */
     [data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) {
 
         background-color: #2563eb;
@@ -258,7 +308,6 @@ else:
         font-weight: 600;
 
         box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
-
     }
 
 
@@ -269,7 +318,6 @@ else:
         border-color: #60a5fa;
 
         color: #ffffff;
-
     }
 
 
@@ -279,10 +327,16 @@ else:
 
         border-color: #1d4ed8;
 
+        color: #ffffff;
     }
 
     </style>
     """, unsafe_allow_html=True)
+
+
+    # ==========================================
+    # BANKING MENU
+    # ==========================================
 
     menu = st.sidebar.radio(
         "BANKING MENU",
@@ -292,12 +346,18 @@ else:
             "Withdraw",
             "Money Transfer",
             "Transaction History",
-            "Transaction Analysis"
+            "Transaction Analysis",
+            "E-Receipt"
         ]
     )
 
 
     st.sidebar.divider()
+
+
+    # ==========================================
+    # LOGOUT
+    # ==========================================
 
     if st.sidebar.button(
         "Logout",
@@ -310,11 +370,17 @@ else:
 
         st.rerun()
 
+
+    # ==========================================
+    # DASHBOARD
+    # ==========================================
+
     if menu == "Dashboard":
 
         st.header(
             f"Welcome, {account.account_name}"
         )
+
 
         st.subheader(
             "Account Overview"
@@ -354,6 +420,10 @@ else:
         )
 
 
+    # ==========================================
+    # DEPOSIT
+    # ==========================================
+
     elif menu == "Deposit":
 
         st.header(
@@ -387,6 +457,7 @@ else:
                 st.error(
                     "Invalid deposit amount."
                 )
+
 
             else:
 
@@ -422,6 +493,10 @@ else:
                         )
                     )
 
+
+    # ==========================================
+    # WITHDRAW
+    # ==========================================
 
     elif menu == "Withdraw":
 
@@ -500,6 +575,10 @@ else:
                     )
 
 
+    # ==========================================
+    # MONEY TRANSFER
+    # ==========================================
+
     elif menu == "Money Transfer":
 
         st.header(
@@ -534,13 +613,10 @@ else:
             use_container_width=True
         ):
 
-            result = (
-                yap_bank_transfer
-                .transfer_money(
-                    account,
-                    recipient_account,
-                    amount
-                )
+            result = yap_bank_transfer.transfer_money(
+                account,
+                recipient_account,
+                amount
             )
 
 
@@ -570,6 +646,11 @@ else:
                 st.error(
                     result["message"]
                 )
+
+
+    # ==========================================
+    # TRANSACTION HISTORY
+    # ==========================================
 
     elif menu == "Transaction History":
 
@@ -631,7 +712,6 @@ else:
                                 0
                             )
                         )
-
                 })
 
 
@@ -648,6 +728,11 @@ else:
                 "No transaction history available."
             )
 
+
+    # ==========================================
+    # TRANSACTION ANALYSIS
+    # ==========================================
+
     elif menu == "Transaction Analysis":
 
         st.header(
@@ -662,6 +747,10 @@ else:
             )
         )
 
+
+        # ------------------------------------------
+        # TRANSACTION SUMMARY
+        # ------------------------------------------
 
         st.subheader(
             "1. Transaction Summary"
@@ -697,6 +786,10 @@ else:
 
         st.divider()
 
+
+        # ------------------------------------------
+        # MONEY FLOW ANALYSIS
+        # ------------------------------------------
 
         st.subheader(
             "2. Money Flow Analysis"
@@ -742,6 +835,10 @@ else:
         st.divider()
 
 
+        # ------------------------------------------
+        # ACCOUNT ACTIVITY ANALYSIS
+        # ------------------------------------------
+
         st.subheader(
             "3. Account Activity Analysis"
         )
@@ -785,71 +882,74 @@ else:
             f"{result['latest_timestamp']}"
         )
 
-menu = st.sidebar.radio(
-    "BANKING MENU",
-    [
-        "Dashboard",
-        "Deposit",
-        "Withdraw",
-        "Money Transfer",
-        "Transaction History",
-        "Transaction Analysis",
-        "E-Receipt"
-    ]
-)
 
-elif menu == "E-Receipt":
+    # ==========================================
+    # E-RECEIPT
+    # ==========================================
 
-    st.header(
-        "E-Receipt"
-    )
+    elif menu == "E-Receipt":
 
-    st.write(
-        "Generate a digital receipt for your latest transaction."
-    )
+        st.header(
+            "E-Receipt"
+        )
 
-    transactions = (
-        yap_bank_transactions
-        .get_transactions()
-    )
 
-    transactions = [
-        transaction
-        for transaction in transactions
-        if transaction.get(
-            "account_number"
-        ) == account.account_number
-    ]
+        st.write(
+            "Generate a digital receipt for your latest transaction."
+        )
 
-    if transactions:
 
-        latest_transaction = transactions[-1]
+        st.divider()
 
-        receipt = yap_bank_receipt.create_receipt(
-            account,
-            latest_transaction.get(
-                "transaction",
-                "N/A"
-            ),
-            latest_transaction.get(
-                "amount",
-                0.0
+
+        transactions = (
+            yap_bank_transactions
+            .get_transactions()
+        )
+
+
+        transactions = [
+            transaction
+            for transaction in transactions
+            if transaction.get(
+                "account_number"
+            ) == account.account_number
+        ]
+
+
+        if transactions:
+
+            latest_transaction = transactions[-1]
+
+
+            receipt = yap_bank_receipt.create_receipt(
+                account,
+                latest_transaction.get(
+                    "transaction",
+                    "N/A"
+                ),
+                latest_transaction.get(
+                    "amount",
+                    0.0
+                )
             )
-        )
 
-        st.code(
-            yap_bank_receipt.format_receipt(
-                receipt
+
+            st.code(
+                yap_bank_receipt.format_receipt(
+                    receipt
+                )
             )
-        )
 
-        st.success(
-            "E-receipt generated successfully."
-        )
 
-    else:
+            st.success(
+                "E-receipt generated successfully."
+            )
 
-        st.info(
-            "No transactions available. "
-            "Complete a transaction first."
-        )
+
+        else:
+
+            st.info(
+                "No transactions available. "
+                "Complete a transaction first."
+            )

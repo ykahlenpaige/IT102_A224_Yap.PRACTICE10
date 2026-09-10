@@ -39,13 +39,23 @@ def transfer_money(
         }
 
 
-    account._balance -= amount
+    success = account.withdraw(
+        amount
+    )
 
 
-    yap_bank_transactions.add_transaction(
-        account_number=account.account_number,
-        transaction="Transfer",
-        amount=amount
+    if not success:
+        return {
+            "success": False,
+            "message":
+                "Transfer failed."
+        }
+
+
+    yap_bank_transactions.record_transaction(
+        account,
+        "Transfer",
+        amount
     )
 
 

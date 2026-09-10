@@ -922,7 +922,7 @@ else:
             latest_transaction = transactions[-1]
 
 
-            receipt = yap_bank_receipt.create_receipt(
+            receipt = yap_bank_eReceipt.create_receipt(
                 account,
                 latest_transaction.get(
                     "transaction",

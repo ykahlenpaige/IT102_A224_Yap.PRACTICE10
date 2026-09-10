@@ -4,8 +4,9 @@ import yap_bank_auth
 import yap_bank_storage
 import yap_bank_transactions
 import yap_bank_analysis
-import yap_bank_transfer
 import yap_bank_utils
+import yap_bank_transfer
+import yap_bank_receipt
 
 st.set_page_config(
     page_title="✪ YAP ✪ Bank",
@@ -782,4 +783,73 @@ else:
         st.caption(
             f"Latest Activity: "
             f"{result['latest_timestamp']}"
+        )
+
+menu = st.sidebar.radio(
+    "BANKING MENU",
+    [
+        "Dashboard",
+        "Deposit",
+        "Withdraw",
+        "Money Transfer",
+        "Transaction History",
+        "Transaction Analysis",
+        "E-Receipt"
+    ]
+)
+
+elif menu == "E-Receipt":
+
+    st.header(
+        "E-Receipt"
+    )
+
+    st.write(
+        "Generate a digital receipt for your latest transaction."
+    )
+
+    transactions = (
+        yap_bank_transactions
+        .get_transactions()
+    )
+
+    transactions = [
+        transaction
+        for transaction in transactions
+        if transaction.get(
+            "account_number"
+        ) == account.account_number
+    ]
+
+    if transactions:
+
+        latest_transaction = transactions[-1]
+
+        receipt = yap_bank_receipt.create_receipt(
+            account,
+            latest_transaction.get(
+                "transaction",
+                "N/A"
+            ),
+            latest_transaction.get(
+                "amount",
+                0.0
+            )
+        )
+
+        st.code(
+            yap_bank_receipt.format_receipt(
+                receipt
+            )
+        )
+
+        st.success(
+            "E-receipt generated successfully."
+        )
+
+    else:
+
+        st.info(
+            "No transactions available. "
+            "Complete a transaction first."
         )

@@ -936,7 +936,7 @@ else:
 
 
             st.code(
-                yap_bank_receipt.format_receipt(
+                yap_bank_eReceipt.format_receipt(
                     receipt
                 )
             )

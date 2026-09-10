@@ -783,4 +783,3 @@ else:
             f"Latest Activity: "
             f"{result['latest_timestamp']}"
         )
-```

@@ -6,7 +6,8 @@ import yap_bank_transactions
 import yap_bank_analysis
 import yap_bank_utils
 import yap_bank_transfer
-import yap_bank_eReceipt
+import yap_bank_receipt
+import yap_bank_limit
 
 
 # ==========================================
@@ -55,9 +56,9 @@ if not st.session_state.logged_in:
     )
 
 
-    # ==========================================
+    # ======================================
     # LOGIN
-    # ==========================================
+    # ======================================
 
     with login_tab:
 
@@ -109,9 +110,9 @@ if not st.session_state.logged_in:
                 st.error(message)
 
 
-    # ==========================================
+    # ======================================
     # REGISTER
-    # ==========================================
+    # ======================================
 
     with register_tab:
 
@@ -197,7 +198,7 @@ if not st.session_state.logged_in:
 
 
 # ==========================================
-# BANKING APPLICATION
+# BANKING SYSTEM
 # ==========================================
 
 else:
@@ -207,9 +208,9 @@ else:
     )
 
 
-    # ==========================================
+    # ======================================
     # SIDEBAR
-    # ==========================================
+    # ======================================
 
     st.sidebar.title(
         "✪ YAP ✪ BANK"
@@ -235,9 +236,9 @@ else:
     st.sidebar.divider()
 
 
-    # ==========================================
+    # ======================================
     # SIDEBAR STYLING
-    # ==========================================
+    # ======================================
 
     st.markdown("""
     <style>
@@ -334,9 +335,9 @@ else:
     """, unsafe_allow_html=True)
 
 
-    # ==========================================
+    # ======================================
     # BANKING MENU
-    # ==========================================
+    # ======================================
 
     menu = st.sidebar.radio(
         "BANKING MENU",
@@ -355,9 +356,9 @@ else:
     st.sidebar.divider()
 
 
-    # ==========================================
+    # ======================================
     # LOGOUT
-    # ==========================================
+    # ======================================
 
     if st.sidebar.button(
         "Logout",
@@ -505,10 +506,35 @@ else:
         )
 
 
+        # Get today's withdrawal amount
+        daily_withdrawal = (
+            yap_bank_limit
+            .get_daily_withdrawal(
+                account
+            )
+        )
+
+
+        # Calculate remaining daily limit
+        remaining_limit = (
+            yap_bank_limit.DAILY_WITHDRAWAL_LIMIT
+            - daily_withdrawal
+        )
+
+
         st.write(
             f"Available Balance: "
             f"**{yap_bank_utils.format_currency(account.check_balance())}**"
         )
+
+
+        st.write(
+            f"Remaining Daily Withdrawal Limit: "
+            f"**{yap_bank_utils.format_currency(remaining_limit)}**"
+        )
+
+
+        st.divider()
 
 
         amount = st.number_input(
@@ -524,6 +550,7 @@ else:
             use_container_width=True
         ):
 
+            # Check if the amount is valid
             if not yap_bank_utils.is_valid_amount(
                 amount
             ):
@@ -533,6 +560,7 @@ else:
                 )
 
 
+            # Check account balance
             elif amount > account.check_balance():
 
                 st.error(
@@ -542,37 +570,67 @@ else:
 
             else:
 
-                success = account.withdraw(
-                    amount
+                # Check daily withdrawal limit
+                limit_result = (
+                    yap_bank_limit
+                    .check_withdrawal_limit(
+                        account,
+                        amount
+                    )
                 )
 
 
-                if success:
+                if not limit_result["success"]:
 
-                    yap_bank_storage.update_account(
-                        account
+                    st.error(
+                        limit_result["message"]
                     )
 
 
-                    yap_bank_transactions.record_transaction(
-                        account,
-                        "Withdraw",
+                else:
+
+                    success = account.withdraw(
                         amount
                     )
 
 
-                    st.success(
-                        "Withdrawal successful."
-                    )
+                    if success:
 
-
-                    st.metric(
-                        "New Balance",
-                        yap_bank_utils
-                        .format_currency(
-                            account.check_balance()
+                        yap_bank_storage.update_account(
+                            account
                         )
-                    )
+
+
+                        yap_bank_transactions.record_transaction(
+                            account,
+                            "Withdraw",
+                            amount
+                        )
+
+
+                        st.success(
+                            "Withdrawal successful."
+                        )
+
+
+                        st.metric(
+                            "New Balance",
+                            yap_bank_utils
+                            .format_currency(
+                                account.check_balance()
+                            )
+                        )
+
+
+                        st.metric(
+                            "Remaining Daily Limit",
+                            yap_bank_utils
+                            .format_currency(
+                                limit_result[
+                                    "remaining_limit"
+                                ]
+                            )
+                        )
 
 
     # ==========================================
@@ -613,10 +671,13 @@ else:
             use_container_width=True
         ):
 
-            result = yap_bank_transfer.transfer_money(
-                account,
-                recipient_account,
-                amount
+            result = (
+                yap_bank_transfer
+                .transfer_money(
+                    account,
+                    recipient_account,
+                    amount
+                )
             )
 
 
@@ -666,11 +727,15 @@ else:
 
 
         transactions = [
+
             transaction
+
             for transaction in transactions
+
             if transaction.get(
                 "account_number"
             ) == account.account_number
+
         ]
 
 
@@ -748,9 +813,9 @@ else:
         )
 
 
-        # ------------------------------------------
+        # --------------------------------------
         # TRANSACTION SUMMARY
-        # ------------------------------------------
+        # --------------------------------------
 
         st.subheader(
             "1. Transaction Summary"
@@ -787,9 +852,9 @@ else:
         st.divider()
 
 
-        # ------------------------------------------
+        # --------------------------------------
         # MONEY FLOW ANALYSIS
-        # ------------------------------------------
+        # --------------------------------------
 
         st.subheader(
             "2. Money Flow Analysis"
@@ -835,9 +900,9 @@ else:
         st.divider()
 
 
-        # ------------------------------------------
-        # ACCOUNT ACTIVITY ANALYSIS
-        # ------------------------------------------
+        # --------------------------------------
+        # ACCOUNT ACTIVITY
+        # --------------------------------------
 
         st.subheader(
             "3. Account Activity Analysis"
@@ -883,10 +948,6 @@ else:
         )
 
 
-    # ==========================================
-    # E-RECEIPT
-    # ==========================================
-
     elif menu == "E-Receipt":
 
         st.header(
@@ -895,7 +956,8 @@ else:
 
 
         st.write(
-            "Generate a digital receipt for your latest transaction."
+            "Generate a digital receipt "
+            "for your latest transaction."
         )
 
 
@@ -908,35 +970,48 @@ else:
         )
 
 
+        # Only show this account's transactions
         transactions = [
+
             transaction
+
             for transaction in transactions
+
             if transaction.get(
                 "account_number"
             ) == account.account_number
+
         ]
 
 
         if transactions:
 
-            latest_transaction = transactions[-1]
+            latest_transaction = (
+                transactions[-1]
+            )
 
 
-            receipt = yap_bank_eReceipt.create_receipt(
-                account,
-                latest_transaction.get(
-                    "transaction",
-                    "N/A"
-                ),
-                latest_transaction.get(
-                    "amount",
-                    0.0
+            receipt = (
+                yap_bank_receipt
+                .create_receipt(
+                    account,
+
+                    latest_transaction.get(
+                        "transaction",
+                        "N/A"
+                    ),
+
+                    latest_transaction.get(
+                        "amount",
+                        0.0
+                    )
                 )
             )
 
 
             st.code(
-                yap_bank_eReceipt.format_receipt(
+                yap_bank_receipt
+                .format_receipt(
                     receipt
                 )
             )

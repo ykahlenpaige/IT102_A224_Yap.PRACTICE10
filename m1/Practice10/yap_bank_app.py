@@ -992,7 +992,7 @@ else:
 
 
             receipt = (
-                yap_bank_receipt
+                yap_bank_eReceipt
                 .create_receipt(
                     account,
 

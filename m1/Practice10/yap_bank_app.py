@@ -4,12 +4,8 @@ import yap_bank_auth
 import yap_bank_storage
 import yap_bank_transactions
 import yap_bank_analysis
+import yap_bank_transfer
 import yap_bank_utils
-
-
-# ==========================================
-# PAGE CONFIGURATION
-# ==========================================
 
 st.set_page_config(
     page_title="✪ YAP ✪ Bank",
@@ -17,10 +13,6 @@ st.set_page_config(
     layout="wide"
 )
 
-
-# ==========================================
-# SESSION STATE
-# ==========================================
 
 if "logged_in" not in st.session_state:
 
@@ -31,13 +23,11 @@ if "account" not in st.session_state:
 
     st.session_state.account = None
 
-
 st.title("✪ YAP ✪ BANK")
 
 st.caption(
     "Secure Digital Banking System"
 )
-
 
 if not st.session_state.logged_in:
 
@@ -65,6 +55,7 @@ if not st.session_state.logged_in:
             key="login_pin"
         )
 
+
         if st.button(
             "Login",
             use_container_width=True
@@ -77,6 +68,7 @@ if not st.session_state.logged_in:
                     pin
                 )
             )
+
 
             if account is not None:
 
@@ -93,6 +85,7 @@ if not st.session_state.logged_in:
             else:
 
                 st.error(message)
+
 
     with register_tab:
 
@@ -137,6 +130,7 @@ if not st.session_state.logged_in:
             format="%.2f"
         )
 
+
         if st.button(
             "Create Account",
             use_container_width=True
@@ -154,6 +148,7 @@ if not st.session_state.logged_in:
                 )
             )
 
+
             if account is not None:
 
                 st.success(message)
@@ -166,6 +161,7 @@ if not st.session_state.logged_in:
             else:
 
                 st.error(message)
+
 
 else:
 
@@ -193,62 +189,97 @@ else:
 
     st.sidebar.divider()
 
-    # Slightly added styling for the banking menu
     st.markdown("""
     <style>
-    /* Clean containers for the sidebar menu */
+
     [data-testid="stSidebar"] [role="radiogroup"] label {
+
         background-color: #30333d;
+
         border: 1px solid #454955;
+
         border-radius: 8px;
+
         padding: 10px 12px;
+
         margin-bottom: 6px;
+
         color: #f1f5f9;
+
         width: 100%;
+
         min-height: 44px;
+
         box-sizing: border-box;
+
         justify-content: center;
+
         text-align: center;
+
         transition: all 0.2s ease;
+
     }
 
-    /* Keep all menu text centered */
+
     [data-testid="stSidebar"] [role="radiogroup"] label > div:last-child {
+
         width: 100%;
+
         justify-content: center;
+
         text-align: center;
+
     }
 
-    /* Style the radio indicator to match the blue theme */
+
     [data-testid="stSidebar"] [role="radiogroup"] input[type="radio"] {
+
         accent-color: #93c5fd;
+
     }
 
-    /* Make the selected indicator a soft blue instead of red */
+
     [data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) input[type="radio"] {
+
         accent-color: #dbeafe;
+
     }
 
-    /* Professional blue highlight when selected */
+
     [data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) {
+
         background-color: #2563eb;
+
         border-color: #2563eb;
+
         color: #ffffff;
+
         font-weight: 600;
+
         box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+
     }
+
 
     [data-testid="stSidebar"] [role="radiogroup"] label:hover {
+
         background-color: #3b4252;
+
         border-color: #60a5fa;
+
         color: #ffffff;
+
     }
 
+
     [data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked):hover {
+
         background-color: #1d4ed8;
+
         border-color: #1d4ed8;
-        color: #ffffff;
+
     }
+
     </style>
     """, unsafe_allow_html=True)
 
@@ -258,6 +289,7 @@ else:
             "Dashboard",
             "Deposit",
             "Withdraw",
+            "Money Transfer",
             "Transaction History",
             "Transaction Analysis"
         ]
@@ -265,7 +297,6 @@ else:
 
 
     st.sidebar.divider()
-
 
     if st.sidebar.button(
         "Logout",
@@ -287,6 +318,7 @@ else:
         st.subheader(
             "Account Overview"
         )
+
 
         col1, col2, col3 = st.columns(3)
 
@@ -320,16 +352,19 @@ else:
             "the menu on the left."
         )
 
+
     elif menu == "Deposit":
 
         st.header(
             "Deposit Money"
         )
 
+
         st.write(
             f"Current Balance: "
             f"**{yap_bank_utils.format_currency(account.check_balance())}**"
         )
+
 
         amount = st.number_input(
             "Deposit Amount",
@@ -358,11 +393,13 @@ else:
                     amount
                 )
 
+
                 if success:
 
                     yap_bank_storage.update_account(
                         account
                     )
+
 
                     yap_bank_transactions.record_transaction(
                         account,
@@ -370,9 +407,11 @@ else:
                         amount
                     )
 
+
                     st.success(
                         "Deposit successful."
                     )
+
 
                     st.metric(
                         "New Balance",
@@ -389,10 +428,12 @@ else:
             "Withdraw Money"
         )
 
+
         st.write(
             f"Available Balance: "
             f"**{yap_bank_utils.format_currency(account.check_balance())}**"
         )
+
 
         amount = st.number_input(
             "Withdrawal Amount",
@@ -415,11 +456,13 @@ else:
                     "Invalid withdrawal amount."
                 )
 
+
             elif amount > account.check_balance():
 
                 st.error(
                     "Insufficient balance."
                 )
+
 
             else:
 
@@ -427,11 +470,13 @@ else:
                     amount
                 )
 
+
                 if success:
 
                     yap_bank_storage.update_account(
                         account
                     )
+
 
                     yap_bank_transactions.record_transaction(
                         account,
@@ -439,9 +484,11 @@ else:
                         amount
                     )
 
+
                     st.success(
                         "Withdrawal successful."
                     )
+
 
                     st.metric(
                         "New Balance",
@@ -452,16 +499,89 @@ else:
                     )
 
 
+    elif menu == "Money Transfer":
+
+        st.header(
+            "Money Transfer"
+        )
+
+
+        st.write(
+            f"Available Balance: "
+            f"**{yap_bank_utils.format_currency(account.check_balance())}**"
+        )
+
+
+        st.divider()
+
+
+        recipient_account = st.text_input(
+            "Recipient Account Number"
+        )
+
+
+        amount = st.number_input(
+            "Transfer Amount",
+            min_value=0.0,
+            step=100.0,
+            format="%.2f"
+        )
+
+
+        if st.button(
+            "Confirm Transfer",
+            use_container_width=True
+        ):
+
+            result = (
+                yap_bank_transfer
+                .transfer_money(
+                    account,
+                    recipient_account,
+                    amount
+                )
+            )
+
+
+            if result["success"]:
+
+                yap_bank_storage.update_account(
+                    account
+                )
+
+
+                st.success(
+                    result["message"]
+                )
+
+
+                st.metric(
+                    "New Balance",
+                    yap_bank_utils
+                    .format_currency(
+                        account.check_balance()
+                    )
+                )
+
+
+            else:
+
+                st.error(
+                    result["message"]
+                )
+
     elif menu == "Transaction History":
 
         st.header(
             "Transaction History"
         )
 
+
         transactions = (
             yap_bank_transactions
             .get_transactions()
         )
+
 
         transactions = [
             transaction
@@ -475,6 +595,7 @@ else:
         if transactions:
 
             display_data = []
+
 
             for transaction in transactions:
 
@@ -509,6 +630,7 @@ else:
                                 0
                             )
                         )
+
                 })
 
 
@@ -518,19 +640,19 @@ else:
                 hide_index=True
             )
 
+
         else:
 
             st.info(
                 "No transaction history available."
             )
 
-
-
     elif menu == "Transaction Analysis":
 
         st.header(
             "Transaction Analysis"
         )
+
 
         result = (
             yap_bank_analysis
@@ -543,6 +665,7 @@ else:
         st.subheader(
             "1. Transaction Summary"
         )
+
 
         col1, col2, col3 = st.columns(3)
 
@@ -573,9 +696,11 @@ else:
 
         st.divider()
 
+
         st.subheader(
             "2. Money Flow Analysis"
         )
+
 
         col1, col2, col3 = st.columns(3)
 
@@ -615,9 +740,11 @@ else:
 
         st.divider()
 
+
         st.subheader(
             "3. Account Activity Analysis"
         )
+
 
         col1, col2, col3 = st.columns(3)
 
@@ -656,3 +783,4 @@ else:
             f"Latest Activity: "
             f"{result['latest_timestamp']}"
         )
+```

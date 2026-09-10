@@ -196,33 +196,58 @@ else:
     # Slightly added styling for the banking menu
     st.markdown("""
     <style>
-    /* Put each sidebar menu option in a clean container */
+    /* Clean containers for the sidebar menu */
     [data-testid="stSidebar"] [role="radiogroup"] label {
-        background-color: #f8fafc;
-        border: 1px solid #e2e8f0;
+        background-color: #30333d;
+        border: 1px solid #454955;
         border-radius: 8px;
-        padding: 8px 12px;
+        padding: 10px 12px;
         margin-bottom: 6px;
+        color: #f1f5f9;
+        width: 100%;
+        min-height: 44px;
+        box-sizing: border-box;
+        justify-content: center;
+        text-align: center;
         transition: all 0.2s ease;
+    }
+
+    /* Keep all menu text centered */
+    [data-testid="stSidebar"] [role="radiogroup"] label > div:last-child {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+
+    /* Style the radio indicator to match the blue theme */
+    [data-testid="stSidebar"] [role="radiogroup"] input[type="radio"] {
+        accent-color: #93c5fd;
+    }
+
+    /* Make the selected indicator a soft blue instead of red */
+    [data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) input[type="radio"] {
+        accent-color: #dbeafe;
     }
 
     /* Professional blue highlight when selected */
     [data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) {
         background-color: #2563eb;
         border-color: #2563eb;
-        color: white;
+        color: #ffffff;
         font-weight: 600;
         box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
     }
 
     [data-testid="stSidebar"] [role="radiogroup"] label:hover {
-        border-color: #2563eb;
-        background-color: #eff6ff;
+        background-color: #3b4252;
+        border-color: #60a5fa;
+        color: #ffffff;
     }
 
     [data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked):hover {
         background-color: #1d4ed8;
-        color: white;
+        border-color: #1d4ed8;
+        color: #ffffff;
     }
     </style>
     """, unsafe_allow_html=True)

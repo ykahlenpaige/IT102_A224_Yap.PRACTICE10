@@ -6,7 +6,7 @@ import yap_bank_transactions
 import yap_bank_analysis
 import yap_bank_utils
 import yap_bank_transfer
-import yap_bank_receipt
+import yap_bank_eReceipt
 import yap_bank_limit
 
 
